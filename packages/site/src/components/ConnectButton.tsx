@@ -1,34 +1,33 @@
-import { useChainId, useConnect, useDisconnect, useAccount } from "wagmi";
+import { useConnect, useDisconnect, useAccount } from "wagmi";
+import { Button } from "@/components/ui/button";
 
 export function Connect() {
-  const chainId = useChainId();
   const { disconnect } = useDisconnect();
   const { connectors, connect } = useConnect();
-  const { address, isConnected } = useAccount();
+  const { isConnected } = useAccount();
+
+  if (isConnected) {
+    return (
+      <Button 
+        variant="destructive" 
+        onClick={() => disconnect()}
+        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+      >
+        Disconnect
+      </Button>
+    );
+  }
 
   return (
-    <div>
-      {isConnected ? (
-        <div className="flex gap-4 items-center">
-          <div className="w-20 truncate">{address}</div>
-          <button className="bg-red-800 text-red-100 px-4 py-2 rounded-md hover:bg-opacity-80 shadow-md hover:shadow-lg duration-150" onClick={() => disconnect()} type="button">
-            Disconnect
-          </button>
-        </div>
-      ) : (
-        <div>
-          {connectors.map((connector) => (
-            <button
-              key={connector.uid}
-              onClick={() => connect({ connector, chainId })}
-              type="button"
-              className="bg-gray-800 text-white px-4 py-2 rounded-md"
-            >
-              Connect Wallet
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+    <>
+      {connectors.map((connector) => (
+        <Button
+          key={connector.uid}
+          onClick={() => connect({ connector })}
+        >
+          Connect Wallet
+        </Button>
+      ))}
+    </>
   );
 }

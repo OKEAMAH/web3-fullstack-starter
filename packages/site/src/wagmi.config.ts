@@ -1,10 +1,10 @@
 import { createConfig, http } from "wagmi";
-import { lineaSepolia } from "wagmi/chains";
+import { lineaSepolia, hardhat } from "wagmi/chains";
 import { metaMask } from "wagmi/connectors";
 
 export const config = createConfig({
   multiInjectedProviderDiscovery: false,
-  chains: [lineaSepolia],
+  chains: [hardhat, lineaSepolia],
   connectors: [
     metaMask({
       dappMetadata: {
@@ -14,8 +14,12 @@ export const config = createConfig({
       },
     }),
   ],
+  syncConnectedChain: true,
   transports: {
-    [lineaSepolia.id]: http(),
+    [hardhat.id]: http("http://127.0.0.1:8545/"),
+    [lineaSepolia.id]: http(
+      `https://linea-sepolia.infura.io/v3/${import.meta.env.VITE_INFURA_PROJECT_ID}`
+    ),
   },
 });
 

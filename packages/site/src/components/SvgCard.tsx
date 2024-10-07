@@ -1,22 +1,34 @@
 import { useReadContract } from "wagmi";
-import { nftAbi } from "../../utils/abis";
+import { nftAbi } from "@/lib/abis";
+import { Badge } from "@/components/ui/badge";
 
-const NFT_CONTRACT_ADDRESS = "0x701c5b02a8E5740B1c90b815354145aB7963eDcB";
+interface SvgProps {
+  token: bigint;
+  onClick?: () => void;
+  isUsed?: boolean;
+}
 
-export const SvgCard = ({ tokenId }: { tokenId: number }) => {
+export const SvgCard = ({ token, onClick, isUsed }: SvgProps) => {
+  const tokenBigInt = Number(token) as unknown as bigint;
   const { data: tokenSVG } = useReadContract({
-    address: NFT_CONTRACT_ADDRESS,
+    address: import.meta.env.VITE_BALLOT_NFT_CONTRACT as `0x${string}`,
     abi: nftAbi,
     functionName: "tokenURI",
-    args: [tokenId],
+    args: [tokenBigInt],
   });
-
+  
   return (
-    <img
-      width={200}
-      height={200}
-      src={`${tokenSVG}`}
-      alt={`Token# ${tokenId}`}
-    />
+    <div className="w-full h-full flex items-center justify-center cursor-pointer relative" onClick={onClick}>
+      <img
+        className="max-w-full max-h-full object-contain"
+        src={`${tokenSVG}`}
+        alt={`Token# ${token}`}
+      />
+      {isUsed && (
+        <Badge variant="secondary" className="absolute top-2 right-2 text-xs">
+          Used
+        </Badge>
+      )}
+    </div>
   );
 };
